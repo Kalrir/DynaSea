@@ -1,0 +1,26 @@
+return {
+  counts = {
+    sandoria = "--",
+    bastok = "--",
+    windurst = "--",
+    jeuno = "--",
+    beau = "--",
+    xarc = "--",
+    valkurm = "--",
+    bub = "--",
+    qufim = "--",
+    tav = "--",
+  },
+  exitTime = {
+    sandoria = "",
+    bastok = "",
+    windurst = "",
+    jeuno = "",
+    beau = "",
+    xarc = "",
+    valkurm = "",
+    bub = "",
+    qufim = "",
+    tav = "",
+  },
+}
