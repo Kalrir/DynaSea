@@ -9,7 +9,7 @@ require('imgui_compat');
 local imgui = require('imgui');
 require('common');
 
-local showGui = { true };
+local showGui = { false };
 
 -- =========================
 -- Zones / Keys
@@ -223,3 +223,4 @@ end);
 ashita.events.register('unload','dynasea_unload_cb',function()
     SaveSettings();
 end);
+
