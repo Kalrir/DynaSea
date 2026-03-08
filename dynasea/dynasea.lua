@@ -184,7 +184,7 @@ end
 local function DrawGui()
     imgui.SetNextWindowSize({620,500}, ImGuiCond_FirstUseEver);
 
-    if imgui.Begin('DynaSea Version 1.1', showGui) then
+    if imgui.Begin('DynaSea Version 1.2', showGui) then
         DrawHeaderRow('Cities:');
         DrawZoneRow('Sand D\'oria','/sea "Dynamis - San d\'Oria"','sandoria'); imgui.Separator();
         DrawZoneRow('Bastok','/sea "Dynamis - Bastok"','bastok'); imgui.Separator();
@@ -250,3 +250,4 @@ ashita.events.register('unload','dynasea_unload_cb',function()
     SaveSettings();
 
 end);
+
