@@ -1,6 +1,6 @@
 addon.name      = 'dynasea';
 addon.author    = 'Kalrir';
-addon.version   = '1.1';
+addon.version   = '1.2';
 addon.desc      = 'A Dynamis Zone Search GUI for Ashita v4 for use on the HorizonXI Private Server.';
 
 _G._XIUI_USE_ASHITA_4_3 = false;
@@ -248,4 +248,5 @@ end);
 
 ashita.events.register('unload','dynasea_unload_cb',function()
     SaveSettings();
+
 end);
