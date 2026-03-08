@@ -32,6 +32,11 @@ local zoneExitTime = {
     beau='', xarc='', valkurm='', bub='', qufim='', tav='',
 };
 
+local zoneLastSearched = {
+    sandoria='', bastok='', windurst='', jeuno='',
+    beau='', xarc='', valkurm='', bub='', qufim='', tav='',
+};
+
 local pendingZoneKey = nil;
 
 -- =========================
@@ -55,6 +60,10 @@ local function SaveSettings()
     for _,k in ipairs(ZONE_KEYS) do
         f:write(string.format('    %s = "%s",\n', k, EscapeLuaString(zoneExitTime[k])));
     end
+    f:write('  },\n  lastSearched = {\n');
+    for _,k in ipairs(ZONE_KEYS) do
+        f:write(string.format('    %s = "%s",\n', k, EscapeLuaString(zoneLastSearched[k])));
+    end
     f:write('  },\n}\n');
     f:close();
 end
@@ -72,12 +81,18 @@ local function LoadSettings()
             if data.exitTime[k] ~= nil then zoneExitTime[k] = tostring(data.exitTime[k]); end
         end
     end
+    if type(data.lastSearched) == 'table' then
+        for _,k in ipairs(ZONE_KEYS) do
+            if data.lastSearched[k] ~= nil then zoneLastSearched[k] = tostring(data.lastSearched[k]); end
+        end
+    end
 end
 
 local function ResetAll()
     for _,k in ipairs(ZONE_KEYS) do
         zoneCounts[k] = '--';
         zoneExitTime[k] = '';
+        zoneLastSearched[k] = '';
     end
     pendingZoneKey = nil;
     SaveSettings();
@@ -125,19 +140,22 @@ end
 -- UI helpers
 -- =========================
 local function DrawHeaderRow(title)
-    imgui.Columns(3,nil,false);
+    imgui.Columns(4,nil,false);
     imgui.SetColumnWidth(1,70);
     imgui.SetColumnWidth(2,110);
+    imgui.SetColumnWidth(3,90);
     imgui.Text(title); imgui.NextColumn();
     imgui.Text('Players:'); imgui.NextColumn();
-    imgui.Text('Exit Time:');
+    imgui.Text('Exit Time:'); imgui.NextColumn();
+    imgui.Text('Last Search:');
     imgui.Columns(1); imgui.Separator();
 end
 
 local function DrawZoneRow(label, cmd, key)
-    imgui.Columns(3,nil,false);
+    imgui.Columns(4,nil,false);
     imgui.SetColumnWidth(1,70);
     imgui.SetColumnWidth(2,110);
+    imgui.SetColumnWidth(3,90);
 
     if imgui.Button(label,{ -1,0 }) then
         pendingZoneKey = key;
@@ -156,6 +174,7 @@ local function DrawZoneRow(label, cmd, key)
         zoneExitTime[key] = buf[1]; SaveSettings();
     end
     imgui.PopItemWidth();
+    imgui.NextColumn(); imgui.Text(zoneLastSearched[key]);
     imgui.Columns(1);
 end
 
@@ -163,7 +182,7 @@ end
 -- Main window
 -- =========================
 local function DrawGui()
-    imgui.SetNextWindowSize({500,500}, ImGuiCond_FirstUseEver);
+    imgui.SetNextWindowSize({620,500}, ImGuiCond_FirstUseEver);
 
     if imgui.Begin('DynaSea Version 1.1', showGui) then
         DrawHeaderRow('Cities:');
@@ -216,6 +235,13 @@ ashita.events.register('text_in','dynasea_textin_cb',function(e)
     local c = msg:match('Search result:%s*(%d+)%s*people found in this area%.');
     if c and pendingZoneKey then
         zoneCounts[pendingZoneKey] = (tonumber(c)==0) and 'Open' or tostring(c);
+        -- Extract game timestamp from chat message e.g. [HH:MM:SS] or [HH:MM]
+        local ts = msg:match('%[(%d+:%d+:%d+)%]') or msg:match('%[(%d+:%d+)%]');
+        if not ts then
+            -- Fall back to real-world time
+            ts = os.date('%H:%M:%S');
+        end
+        zoneLastSearched[pendingZoneKey] = ts;
         pendingZoneKey=nil; SaveSettings();
     end
 end);
@@ -223,4 +249,3 @@ end);
 ashita.events.register('unload','dynasea_unload_cb',function()
     SaveSettings();
 end);
-
